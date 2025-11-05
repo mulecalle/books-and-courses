@@ -1,0 +1,11 @@
+# Buildpack API version
+api = "0.8"
+
+# Buildpack ID and metadata
+[buildpack]
+  id = "examples/node-js"
+  version = "0.0.1"
+
+# Targets the buildpack will work with
+[[targets]]
+os = "linux"
