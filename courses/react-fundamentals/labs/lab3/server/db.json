@@ -1,0 +1,12 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "text": "use redux in todo app"
+    },
+    {
+      "id": 2,
+      "text": "complete bonus milestone"
+    }
+  ]
+}
