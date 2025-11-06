@@ -1,0 +1,12 @@
+Esta aplicación está probada en Django 1.11.2 y python 3.4.x, 
+se debe modificar en settings.py por las rutas en sus maquinas a librosonline
+
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    'C:/Users/Administrador.000/Desktop/librosonline/static',
+
+
+]
+  
+MEDIA_ROOT = 'C:/Users/Administrador.000/Desktop/librosonline/media'

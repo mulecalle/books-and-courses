@@ -1,0 +1,13 @@
+Django==1.11.3
+nanotime==0.5.2
+olefile==0.44
+pillow==4.1.1
+pyautogui==0.9.36
+PyAutoIt==0.4
+pyhtml==1.1.2
+pymsgbox==1.0.6
+pypiwin32==220
+pyscreeze==0.1.9
+pytweening==1.0.3
+pytz==2017.2
+six==1.10.0

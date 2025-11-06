@@ -1,0 +1,14 @@
+from PersonaM import Persona
+
+
+class Gerente(Persona):
+
+    def darAumento(self, porcentaje, premio=0.1):
+        self.sueldo *= (1.0 + porcentaje + premio)
+
+if __name__ == '__main__':
+
+    Tom = Gerente('Tom Perez', 42, 50000, 'software')
+    print(Tom.nombre)
+    Tom.darAumento(0.10, 0.40)
+    print(Tom.sueldo)

@@ -1,0 +1,11 @@
+{% extends "vistaprevia/plantilla.html" %}
+
+{% block content %}
+
+    {% for productos in productos %}
+
+        <a href="{% url 'ver' productos.id %}"> <img src="/static/vistaprevia/{{productos.ruta_imagen}}" alt="My image" width="20%"/></a>
+
+    {% endfor %}
+
+{% endblock %}
