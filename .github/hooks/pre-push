@@ -3,12 +3,11 @@
 # Get the repository root directory
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
-# Run the generate-readme.sh script
-if ! "$REPO_ROOT/scripts/generate-readme.sh"; then
+# Run the make generate command
+if ! make -C "$REPO_ROOT" generate; then
     echo "❌ Error: README generation failed. Please fix the issues and try again."
     exit 1
 fi
-
 # Stage the README.md changes
 git add "$REPO_ROOT/README.md"
 
