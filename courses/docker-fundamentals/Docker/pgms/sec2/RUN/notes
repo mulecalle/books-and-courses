@@ -1,0 +1,31 @@
+
+                        Section 2 - Notes
+                         RUN Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    # Dockerfile for RUN instruction
+    FROM ubuntu
+    RUN mkdir /mydir
+    RUN echo "Here is line one." > /mydir/myfile
+    RUN ["/bin/chmod", "664", "/mydir/myfile"]
+    RUN ["/bin/bash", "-c", \
+        "echo Here is line two. >> /mydir/myfile"]
+    WORKDIR /mydir
+    CMD ["/bin/bash"]
+
+2.  Build image.
+
+    $ docker build -t run . 
+
+3.  Enter container and show files.
+
+    $ docker run -it run
+    root@f8cd86935781:/mydir# ls -l
+    -rw-rw-r--  1 root root 0 Jan 28 14:18 myfile
+    root@f8cd86935781:/mydir# cat myfile
+    Here is line one.
+    Here is line two.
+    root@f8cd86935781:/mydir# exit
+

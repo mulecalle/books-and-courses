@@ -1,0 +1,45 @@
+
+                        Section 2 - Notes
+                        EXPOSE Instruction
+                    Nginix Server Custom Banner
+
+1.  Create custom banner in html subdirectory.
+
+    $ cat html/index.html
+    <html>
+    <body>
+    <h1>Hello from Docker!</h1>
+    </body>
+    </html>
+
+2.  Make sure you are in the nginx directory (Important!)
+
+3.  Run detached webserver container. 
+    Use -v (volume option) to make index.html available to nginx.
+    Map port 80 in container to port 5678 on host.
+
+    $ docker run -d --name webserver \
+    -v "$(pwd)"/html:/usr/share/nginx/html:ro -p 5678:80 nginx
+ 
+4.  Show ports for webserver container.
+
+    $ docker port webserver
+    80/tcp -> 0.0.0.0:5678
+
+5.  Show HTML with curl localhost and port.
+
+    $ curl localhost:5678
+    <html>
+    <body>
+    <h1>Hello from Docker!</h1>
+    </body>
+    </html>
+
+6.  Show in browser with URL.
+
+    http://localhost:5678
+
+7.  Cleanup
+
+    $ docker stop webserver
+    $ docker container prune -f

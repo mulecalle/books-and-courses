@@ -1,0 +1,26 @@
+
+                        Section 2 - Notes
+                         ENV Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    # Dockerfile for ENV instruction
+    FROM ubuntu
+    ENV TOPDIR /usr/bob
+    ENV CUSTOMER1="mysql" CUSTOMER2="hadoop"
+    CMD ["/bin/bash"]
+
+2.  Build image.
+
+    $ docker build -t env . 
+
+3.  Enter container and show environment variables.
+
+    $ docker run -it env
+    root@1878cbd67073:/# echo $TOPDIR
+    /usr/bob
+    root@1878cbd67073:/# echo $CUSTOMER1 $CUSTOMER2
+    mysql hadoop
+    root@1878cbd67073:/# exit 
+

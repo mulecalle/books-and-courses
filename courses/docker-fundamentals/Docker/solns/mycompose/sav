@@ -1,0 +1,123 @@
+
+                             Lab Notes
+                          Docker Compose
+                          
+                             
+$ cat Dockerfile
+# Dockerfile for Apache Web Server
+FROM httpd:latest
+COPY index.html /usr/local/apache2/htdocs/
+EXPOSE 80
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  web1:
+    build: .
+    image: web1
+    ports:
+      - "8001:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+    networks:
+      - myNetwork
+  web2:
+    build: .
+    image: web2
+    ports:
+      - "8002:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+    networks:
+      - myNetwork
+networks:
+  myNetwork: {}
+  
+$ cat index.html
+<html>
+<body>
+<h1>Hello from Docker!</h1>
+</body>
+</html>
+
+$ docker-compose up -d
+Creating network "mycompose_myNetwork" with the default driver
+Building web2
+Step 1/4 : FROM centos:latest
+latest: Pulling from library/centos
+a1d0c7532777: Pull completeDigest: sha256:a27fd8080b51...432b177
+Status: Downloaded newer image for centos:latest
+ ---> 5d0da3dc9764
+Step 2/4 : RUN yum -y install httpd
+ ---> Running in 8ff3b7c49fd6
+CentOS Linux 8 - AppStream          16 MB/s | 8.1 MB     00:00    
+CentOS Linux 8 - BaseOS             22 MB/s | 3.5 MB     00:00    
+CentOS Linux 8 - Extras            131 kB/s |  10 kB     00:00    
+Dependencies resolved.
+. . .
+Complete!
+Removing intermediate container 8ff3b7c49fd6
+ ---> c365dc9a177c
+Step 3/4 : COPY index.html /var/www/html/
+ ---> 6003d89d48b6
+Step 4/4 : EXPOSE 80
+ ---> Running in 51202672a24d
+Removing intermediate container 51202672a24d
+ ---> 423790380648
+Successfully built 423790380648
+Successfully tagged web2:latest
+. . .
+Building web1
+Step 1/4 : FROM centos:latest
+ ---> 5d0da3dc9764
+Step 2/4 : RUN yum -y install httpd
+ ---> Using cache
+ ---> c365dc9a177c
+Step 3/4 : COPY index.html /var/www/html/
+ ---> Using cache
+ ---> 6003d89d48b6
+Step 4/4 : EXPOSE 80
+ ---> Using cache
+ ---> 423790380648
+Successfully built 423790380648
+Successfully tagged web1:latest
+. . .
+Creating mycompose_web2_1 ... 
+Creating mycompose_web1_1 ... 
+Creating mycompose_web1_1
+Creating mycompose_web2_1 ... done
+
+$ docker-compose ps
+      Name                    Command       State   Ports        
+----------------------------------------------------------------
+mycompose_web1_1   /usr/sbin/httpd -D ...   Up      8001->80/tcp
+mycompose_web2_1   /usr/sbin/httpd -D ...   Up      8002->80/tcp
+
+$ docker network ls
+NETWORK ID          NAME                  DRIVER    SCOPE
+cdc357fa2329        bridge                bridge    local
+88455cd35b8a        host                  host      local
+a680de2d1cde        mycompose_myNetwork   bridge    local
+6da33a989cef        none                  null      local
+
+$ curl localhost:8001
+<html>
+<body>
+<h1>Hello from Docker!</h1>
+</body>
+</html>
+
+$ curl localhost:8002
+<html>
+<body>
+<h1>Hello from Docker!</h1>
+</body>
+</html>
+
+$ docker-compose down
+Stopping mycompose_web2_1 ... done
+Stopping mycompose_web1_1 ... done
+Removing mycompose_web2_1 ... done
+Removing mycompose_web1_1 ... done
+Removing network mycompose_myNetwork
+

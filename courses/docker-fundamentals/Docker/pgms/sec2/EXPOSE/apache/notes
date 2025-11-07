@@ -1,0 +1,48 @@
+
+                        Section 2 - Notes
+                        EXPOSE Instruction
+                          Apache Server
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    # Dockerfile for Apache Web Server
+    FROM httpd:latest
+    COPY index.html /usr/local/apache2/htdocs/
+    EXPOSE 80
+
+2.  Build image.
+
+    $ docker build -t apache .
+
+3.  Run detached webserver container. 
+    Map port 80 in container to port 1234 on host.
+
+    $ docker run -d --name webserver -p 1234:80 apache
+
+4.  Show ports for webserver container.
+
+    $ docker port webserver
+    80/tcp -> 0.0.0.0:1234
+
+5.  Show HTML with curl localhost and port.
+
+    $ curl localhost:1234
+    <html>
+    <body>
+    <h1>Anderson Software Group, Inc.</h1>
+        <h2><a href="https://asgteach.com/"
+            title="Anderson Software Group, Inc.">
+            https://asgteach.com</a>
+        </h2>
+    </body>
+    </html>
+
+6.  Show in browser with URL.
+
+    http://localhost:1234
+
+7.  Cleanup
+
+    $ docker stop webserver
+    $ docker container prune -f

@@ -1,0 +1,50 @@
+
+                        Section 2 - Notes
+                       ONBUILD Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    FROM ubuntu
+    RUN mkdir -p /usr/src/app
+    WORKDIR /usr/src/app
+    ONBUILD COPY package.json .
+    ONBUILD COPY install.sh .
+    ONBUILD RUN ./install.sh > log
+    CMD ["/bin/bash"]
+
+    Note that package.json and install.sh are NOT in this directory.
+    Also, ./install.sh with RUN is required to execute the script.
+
+2.  Build base image with ONBUILD instructions in Dockerfile.
+
+    $ docker build -t mybase .
+
+3.  Enter container and show RUN and COPY instructions were delayed.
+
+    $ docker run -it mybase
+    root@7827fd139c69:/usr/src/app# ls
+    root@7827fd139c69:/usr/src/app# exit
+
+    Note that working dir is /usr/src/app and no files were copied.
+
+4.  Dockerfile in myapp directory.
+
+    $ cat Dockerfile
+    FROM mybase
+    CMD ["/bin/sh"]
+
+5.  Build myapp image with this Dockerfile.
+
+    $ cd myapp
+    $ docker build -t myapp .
+
+6.  Enter container and show RUN and COPY instructions were executed.
+
+    $ docker run -it myapp
+    # pwd   
+    /usr/src/app
+    # ls
+    install.sh  log  package.json
+    # cat log
+    Installed packages...

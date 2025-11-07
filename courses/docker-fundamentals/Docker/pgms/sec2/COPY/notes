@@ -1,0 +1,32 @@
+
+                        Section 2 - Notes
+                         COPY Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    # Dockerfile for COPY instruction
+    FROM ubuntu
+    COPY testfile* /
+    COPY mydir /images
+    COPY --chown=10:20 mycert /
+    CMD ["/bin/bash"]
+
+2.  Build image.
+
+    $ docker build -t copy . 
+
+3.  Enter container and show files copied.
+
+    $ docker run -it copy
+    root@66f816799a3d:/# ls
+    bin  dev home   lib   media mycert proc run  srv testfile1 tmp var
+    boot etc images lib64 mnt   opt    root sbin sys testfile2 usr
+    root@66f816799a3d:/# ls images
+    image1  image2  image3
+    root@66f816799a3d:/# ls -l mycert
+    -rw-r--r-- 1 uucp dialout 0 Oct  7  2019 mycert
+    root@66f816799a3d:/# exit 
+
+    For mycert, uid (10) is uucp and gid (20) is dialout.
+

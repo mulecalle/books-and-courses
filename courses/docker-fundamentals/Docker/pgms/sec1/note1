@@ -1,0 +1,194 @@
+
+                        Section 1 - Note 1
+                         Docker Overview
+
+$ docker run hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+1b930d010525: Pulling fs layer
+1b930d010525: Download complete
+1b930d010525: Pull complete
+Digest: sha256:9572f7...5a247fcad1917ca215a2f
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+. . .
+
+$ docker create hello-world
+dc16608fe526...5811be62ccf8266a312ae1be3097b32b
+
+$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND
+dc16608fe526        hello-world         "/hello"
+
+$ docker start -a dc16608fe526
+Hello from Docker!
+. . .
+
+$ docker start -a $(docker create hello-world)
+Hello from Docker!
+. . .
+
+$ docker image ls hello-world
+REPOSITORY          TAG             IMAGE ID        SIZE
+hello-world         latest          fce289e99eb9    1.84kB
+
+$ docker pull debian
+Using default tag: latest
+latest: Pulling from library/debian
+dc65f448a2e2: Pull complete
+Digest: sha256:d986a531d...0078078cb0f29f9685ee36466
+Status: Downloaded newer image for debian:latest
+docker.io/library/debian:latest
+
+$ docker run busybox echo hello from container!
+hello from container!
+
+$ docker run -it ubuntu /bin/bash
+root@3c37a93e47f8:/# ls /usr/local
+bin  etc  games  include  lib  man  sbin  share  src
+root@3c37a93e47f8:/# exit
+
+$ docker run -itd --name myubc ubuntu
+350985b240d75d6...c5d23c228904cb81b0bd824e4ac1ca8
+
+$ docker exec -d myubc touch /tmp/myfile
+
+$ docker attach myubc
+root@350985b240d7:/# ls /tmp/myfile
+/tmp/myfile
+root@350985b240d7:/# exit
+
+$ docker run -it --name myubc ubuntu /bin/bash
+root@1f4d07edcb7b:/# apt-get update
+Fetched 17.5 MB in 17s (1004 kB/s)
+Reading package lists... Done
+. . .
+root@1f4d07edcb7b:/# apt-get install vim
+Reading package lists... Done
+. . .
+root@1f4d07edcb7b:/# which vi
+/usr/bin/vi
+root@1f4d07edcb7b:/# vi newfile
+root@1f4d07edcb7b:/# apt-get install tree
+Reading package lists... Done
+. . .
+root@1f4d07edcb7b:/# which tree
+/usr/bin/tree
+root@1f4d07edcb7b:/# tree /usr/local
+/usr/local
+. . .
+root@1f4d07edcb7b:/# exit
+
+$ docker commit myubc myubi
+sha256:90520f7e11ef...38777df52fb5ef8aa3a8a7c84eed9f
+
+$ docker images
+REPOSITORY          TAG                 IMAGE ID
+myubi               latest              90520f7e11ef
+
+$ docker run -it myubi /bin/bash
+root@bce8574b2648:/# vi newfile
+root@bce8574b2648:/# tree /usr/local
+/usr/local
+. . .
+root@bce8574b2648:/# exit
+
+$ docker history myubi
+IMAGE               CREATED             CREATED BY
+90520f7e11ef        3 minutes ago       /bin/bash
+
+$ docker run -it --name alpc alpine /bin/sh
+/ # touch /tmp/myfile; hostname
+24a852c80aab
+/ # exit
+
+$ docker logs alpc
+/ # touch /tmp/myfile; hostname
+24a852c80aab
+/ # exit
+
+$ docker export myubc -o myubc.tar
+
+$ ls -l myubc.tar
+total 329624
+-rw-------  1 paul  staff  154755072 Feb  3 15:59 myubc.tar
+
+$ docker import myubc.tar myubi
+sha256:c13beb3dbf08c6...29a493c0fd16a449e5e2b6b28
+
+$ docker save myubi -o myubi.tar
+$ ls -l myubi.tar
+-rw-------  1 paul  staff  154763264 Feb  3 16:07 myubi.tar
+
+$ gzip myubc.tar
+
+$ ls -l myubc.tar
+total 128408
+-rw-------  1 paul  staff  65420306 Feb  3 15:59 myubc.tar.gz
+
+$ docker load -i myubi.tar
+Loaded image: myubi:latest
+
+$ ls -l myubi.tar
+-rw-------  1 paul  staff  154763264 Feb  3 16:07 myubi.tar
+
+$ docker cp myfile myubc:/myfile
+$ docker cp myfile myubc:/tmp
+
+$ docker attach myubc
+You cannot attach to a stopped container, start it first
+
+$ docker start myubc
+myubc
+
+$ docker attach myubc
+root@62f3400a7973:/# ls myfile /tmp/myfile
+/tmp/myfile  myfile
+root@62f3400a7973:/# exit
+
+$ docker cp myubc:/etc/shells .
+
+$ cat shells
+/bin/sh
+/bin/bash
+/bin/rbash
+/bin/dash
+
+$ docker create --cidfile /tmp/ub.id ubuntu
+8be42aa83d0b07dfd...10584fd787538c81f2758256a7d
+
+$ cat /tmp/ub.id
+8be42aa83d0b07dfd...10584fd787538c81f2758256a7d
+
+$ docker stop myubc
+myubc
+
+$ docker start myubc
+myubc
+
+$ docker restart myubc
+myubc
+
+$ docker kill myubc
+myubc
+
+$ docker rm myubc
+Error ...: You cannot remove a running container... 
+Stop the container before attempting removal or force remove
+ 
+$ docker rm -f myubc
+myubc
+
+$ docker run --rm busybox echo Hello and Goodbye!
+Hello and Goodbye!
+
+$ docker rmi alpine
+Untagged: alpine:latest
+Untagged: alpine@sha256:ab00606...9db3d1172b11c4367d
+Deleted: sha256:e7d92cdc71feacf...e8e95d75ca6a99776a
+Deleted: sha256:5216338b40a7b96...c4dfb1ee02aecceb10
+
+$ docker image prune -f
+Total reclaimed space: 0B
+

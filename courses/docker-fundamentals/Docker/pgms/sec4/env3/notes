@@ -1,0 +1,55 @@
+
+                        Section 4 - Notes
+                      Environment Variables
+                             
+$ cd env3
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  webserver:
+    image: nginx
+    environment:
+      - API_KEY=${KEY}
+    ports:
+      - "8003:80"
+      
+$ cat .env
+KEY=8a53m7x02p58d8s1
+
+$ docker-compose up -d
+Creating network "env3_default" with the default driver
+Creating env3_webserver_1 ... 
+Creating env3_webserver_1 ... done
+
+$ docker-compose ps
+      Name                    Command      State    Ports        
+----------------------------------------------------------------
+env3_webserver_1   /docker-entrypoint...   Up       8003->80/tcp
+
+$ docker exec env3_webserver_1 env | grep API
+API_KEY=8a53m7x02p58d8s1
+
+$ docker-compose down
+Stopping env3_webserver_1 ... done
+Removing env3_webserver_1 ... done
+Removing network env3_default
+
+$ export KEY=fritz
+
+$ docker-compose up -d
+Creating network "env3_default" with the default driver
+Creating env3_webserver_1 ... 
+Creating env3_webserver_1 ... done
+
+$ docker exec env3_webserver_1 env | grep API
+API_KEY=fritz
+
+# Note that env vars override .env settings
+
+# Here is the order of preference
+#    1. Compose file
+#    2. Shell env vars (export)
+#    3. Environment file (.env)
+#    4. Dockerfile
+

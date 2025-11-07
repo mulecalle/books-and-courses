@@ -1,0 +1,40 @@
+
+                        Section 4 - Notes
+                     Greeting Hello Service
+                            
+$ cd greeting
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  hello:
+    image: alpine:latest
+    command: [/bin/echo, 'Hello from alpine!']
+
+$ docker-compose up
+Creating network "greeting_default" with the default driver
+Creating greeting_hello_1 ... 
+Creating greeting_hello_1 ... done
+Attaching to greeting_hello_1
+hello_1  | Hello from alpine!
+greeting_hello_1 exited with code 0
+
+$ docker-compose ps
+      Name                   Command              State    Ports
+----------------------------------------------------------------
+greeting_hello_1   /bin/echo Hello from alpine!   Exit 0  
+
+$ docker-compose up
+Starting greeting_hello_1 ... 
+Starting greeting_hello_1 ... done
+Attaching to greeting_hello_1
+hello_1  | Hello from alpine!
+greeting_hello_1 exited with code 0
+
+
+
+
+
+
+
+

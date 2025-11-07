@@ -1,0 +1,92 @@
+
+                             Lab Notes
+                          Docker Compose
+                          
+                             
+$ cat Dockerfile
+# Dockerfile for Apache Web Server
+FROM httpd:latest
+COPY index.html /usr/local/apache2/htdocs/
+EXPOSE 80
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  web1:
+    build: .
+    image: web1
+    ports:
+      - "8001:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+    networks:
+      - myNetwork
+  web2:
+    build: .
+    image: web2
+    ports:
+      - "8002:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+    networks:
+      - myNetwork
+networks:
+  myNetwork: {}
+  
+$ cat index.html
+<html>
+<body>
+<h1>Hello from Docker!</h1>
+</body>
+</html>
+
+$ docker-compose up -d
+Creating network "mycompose_myNetwork" with the default driver
+Building web2
+Step 1/3 : FROM httpd:latest
+ ---> acd59370d8fb
+Step 2/3 : COPY index.html /usr/local/apache2/htdocs/
+ ---> 90ac706239a5
+Step 3/3 : EXPOSE 80
+ ---> Running in 2a98744f2eb6
+Removing intermediate container 2a98744f2eb6
+ ---> 32b067de5242
+Successfully built 32b067de5242
+Successfully tagged web2:latest
+Creating mycompose_web1_1 ... done
+Creating mycompose_web2_1 ... done
+
+$ docker-compose ps
+      Name                  Command       State   Ports        
+----------------------------------------------------------------
+mycompose_web1_1       httpd-foreground   Up      8001->80/tcp
+mycompose_web2_1       httpd-foreground   Up      8002->80/tcp
+
+$ docker network ls
+NETWORK ID          NAME                  DRIVER    SCOPE
+cdc357fa2329        bridge                bridge    local
+88455cd35b8a        host                  host      local
+a680de2d1cde        mycompose_myNetwork   bridge    local
+6da33a989cef        none                  null      local
+
+$ curl localhost:8001
+<html>
+<body>
+<h1>Hello from Docker!</h1>
+</body>
+</html>
+
+$ curl localhost:8002
+<html>
+<body>
+<h1>Hello from Docker!</h1>
+</body>
+</html>
+
+$ docker-compose down
+Stopping mycompose_web2_1 ... done
+Stopping mycompose_web1_1 ... done
+Removing mycompose_web2_1 ... done
+Removing mycompose_web1_1 ... done
+Removing network mycompose_myNetwork
+

@@ -1,0 +1,40 @@
+
+                        Section 4 - Notes
+                     Pull Image Hello Service
+                             
+$ cd pullimage
+
+# modify this file for busybox
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  hello:
+    image: busybox
+    command: [/bin/echo, 'Hello from busybox!']
+
+$ docker-compose up
+Pulling hello (busybox:latest)...
+latest: Pulling from library/busybox
+e685c5c858e3: Pull complete 
+Digest: sha256:e7157b6d7ebb...9b9f90a9ec42e57323546c353
+Status: Downloaded newer image for busybox:latest 
+Creating pullimage_hello_1 ... done
+Attaching to pullimage_hello_1
+hello_1  | Hello from busybox!
+pullimage_hello_1 exited with code 0
+
+$ docker-compose ps
+      Name                     Command              State    Ports
+------------------------------------------------------------------
+pullimage_hello_1   /bin/echo Hello from busybox!   Exit 0    
+
+$ docker-compose up 
+Starting pullimage_hello_1 ... done
+Attaching to pullimage_hello_1
+hello_1  | Hello from busybox!
+pullimage_hello_1 exited with code 0
+
+$ docker ps -a
+CONTAINER ID    IMAGE     COMMAND        NAMES
+20e6c268afa3    busybox   "/bin/echo…"   pullimage_hello_1
+

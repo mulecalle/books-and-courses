@@ -1,0 +1,177 @@
+
+                        Section 3 - Notes
+                             Networks
+                             
+
+$ docker info
+Client:
+ Debug Mode: false
+ . . .
+Server:
+ . . .
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  . . .
+ Swarm: inactive
+ . . .
+
+$ docker network ls
+NETWORK ID          NAME           DRIVER         SCOPE
+17922f6a8984        bridge         bridge         local
+88455cd35b8a        host           host           local
+6da33a989cef        none           null           local
+
+$ docker network inspect none
+[
+    {
+        "Name": "none",
+        "Id": "6da33a989cef135a27a5786a5aa13cb508119e1ec61aba4318b10784e76d1eb8",
+        "Created": "2020-03-01T12:13:43.617113901Z",
+        "Scope": "local",
+        "Driver": "null",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": []
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+$ docker network inspect host
+[
+    {
+        "Name": "host",
+        "Id": "88455cd35b8ad6f7c8a1850bf0afdc7050590fc578d8d845e2ed4063f12747e9",
+        "Created": "2020-03-01T12:13:43.664425732Z",
+        "Scope": "local",
+        "Driver": "host",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": []
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+$ docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "a6b80153eb2b...ae2db7225ce36fbec5b0f9b",
+        "Created": "2021-11-20T20:40:00.283319931Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.18.0.1/24",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        . . .
+    }
+]
+
+$ docker run -d --name mybridge alpine tail -f /dev/null
+86df478b4f9c...ab1ff670c1ac8dfa5860be
+
+$ docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "a6b80153eb2b...ae2db7225ce36fbec5b0f9b",
+        . . .
+        "Containers": {
+            "86df478b4f9c...ab1ff670c1ac8dfa5860be": {
+                "Name": "mybridge",
+                "EndpointID": "b75942bd8d1b...82edd6ba7aa8b",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/24",
+                "IPv6Address": ""
+            }
+        },
+        . . .
+    }
+]
+
+$ ping -c3 172.18.0.3
+PING 172.18.0.3 (172.18.0.3) 56(84) bytes of data.
+64 bytes from 172.18.0.3: icmp_seq=1 ttl=64 time=0.094 ms
+64 bytes from 172.18.0.3: icmp_seq=2 ttl=64 time=0.067 ms
+64 bytes from 172.18.0.3: icmp_seq=3 ttl=64 time=0.076 ms
+
+--- 172.18.0.3 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2025ms
+rtt min/avg/max/mdev = 0.067/0.079/0.094/0.011 ms
+
+$ docker exec -it mybridge sh
+/ # ping -c3 python.org
+PING python.org (138.197.63.241): 56 data bytes
+64 bytes from 138.197.63.241: seq=0 ttl=51 time=89.214 ms
+64 bytes from 138.197.63.241: seq=1 ttl=51 time=88.296 ms
+64 bytes from 138.197.63.241: seq=2 ttl=51 time=87.986 ms
+
+--- python.org ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 87.986/88.498/89.214 ms
+/ # exit
+
+$ docker run -d --name mynone --network none alpine tail -f /dev/null
+c47a11d734f578901d176f55ccaa7037457605eb754b22b229d8e3bd0a4e8488
+
+$ docker exec mynone ifconfig
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          
+$ docker run -d --name myhost --network host alpine tail -f /dev/null
+7ac2448a107b894b3daf95974a3df113439a0c76d6d7c6819ff13e13ed034ba3
+
+$ docker exec myhost ifconfig
+docker0   Link encap:Ethernet  HWaddr 02:42:FC:E5:3D:2C  
+          inet addr:172.18.0.1  Bcast:172.18.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::42:fcff:fee5:3d2c/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:15 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:61 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:980 (980.0 B)  TX bytes:6618 (6.4 KiB)
+          . . .
+          
+$ docker ps -a
+CONTAINER ID    IMAGE      COMMAND                  NAMES
+68748746ee12    alpine     "tail -f /dev/null       mynone
+
+          
+
+

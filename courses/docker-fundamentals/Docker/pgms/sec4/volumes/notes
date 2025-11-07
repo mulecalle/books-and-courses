@@ -1,0 +1,112 @@
+
+                        Section 4 - Notes
+                             Volumes
+                             
+$ cd volumes
+
+$ cat Dockerfile
+# Dockerfile for Apache Web Server
+FROM httpd:latest
+COPY index.html /usr/local/apache2/htdocs/
+EXPOSE 80
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  myvols:
+    build: .
+    image: myvols
+    ports:
+      - "1234:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+    
+$ cat index.html
+<html>
+<body>
+<h1>Anderson Software Group, Inc.</h1>
+    <h2><a href="https://asgteach.com/" 
+        title="Anderson Software Group, Inc."> 
+        https://asgteach.com</a>
+    </h2>
+</body>
+</html>
+
+$ docker-compose up -d
+Creating network "volumes_default" with the default driver
+Building myvols
+Step 1/3 : FROM httpd:latest
+Step 2/3 : COPY index.html /usr/local/apache2/htdocs/
+Step 3/3 : EXPOSE 80
+Creating volumes_myvols_1 ... done
+
+$ docker-compose ps
+      Name                 Command      State    Ports        
+-------------------------------------------------------------
+volumes_myvols_1     httpd-foreground   Up       1234->80/tcp
+
+$ curl localhost:1234
+<html>
+<body>
+<h1>Anderson Software Group, Inc.</h1>
+    <h2><a href="https://asgteach.com/" 
+        title="Anderson Software Group, Inc."> 
+        https://asgteach.com</a>
+    </h2>
+</body>
+</html>
+
+# Modify index.html
+$ cat index.html 
+<html>
+<body>
+<h1>Anderson Software Group, Inc.</h1>
+    <h2><a href="https://asgteach.com/" 
+        title="My Anderson Software Group, Inc."> 
+        https://asgteach.com</a>
+    </h2>
+</body>
+</html>
+
+# this doesn't work...
+$ docker-compose restart
+Restarting volumes_myvols_1 ... done
+
+$ curl localhost:1234
+<html>
+<body>
+<h1>Anderson Software Group, Inc.</h1>
+    <h2><a href="https://asgteach.com/"
+        title="Anderson Software Group, Inc.">
+        https://asgteach.com</a>
+    </h2>
+</body>
+</html>
+
+# this does work...
+$ docker-compose down
+Stopping volumes_myvols_1 ... done
+Removing volumes_myvols_1 ... done
+Removing network volumes_default
+$ docker container prune -f
+
+$ docker-compose build
+Building myvols
+. . .
+Successfully built 9537de62268a
+Successfully tagged myvols:latest
+
+$ docker-compose up -d
+Creating network "volumes_default" with the default driver
+Creating volumes_myvols_1 ... done
+
+$ curl localhost:1234
+<html>
+<body>
+<h1>Anderson Software Group, Inc.</h1>
+    <h2><a href="https://asgteach.com/" 
+        title="My Anderson Software Group, Inc."> 
+        https://asgteach.com</a>
+    </h2>
+</body>
+</html>

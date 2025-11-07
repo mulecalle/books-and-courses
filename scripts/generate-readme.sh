@@ -30,5 +30,5 @@ find "${REPO_ROOT}/courses" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;
   echo "- [${display_name}](./courses/${course})" >> "$README_FILE"
 done
 
-echo -e "\n" >> "$README_FILE"
+echo -e >> "$README_FILE"
 echo "README.md has been generated successfully at $README_FILE"

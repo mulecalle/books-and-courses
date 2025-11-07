@@ -1,0 +1,28 @@
+
+                        Section 2 - Notes
+                        USER Instruction
+
+1.  Initial Dockerfile, build image and run.
+
+    $ cat Dockerfile
+    FROM ubuntu
+    USER games:games
+    CMD ["/bin/bash"]
+
+    $ docker build -t user . 
+    $ docker run -it user
+    games@fc22c5b426ff:/$ id
+    uid=5(games) gid=60(games) groups=60(games)
+
+2.  Next Dockerfile, build image and run.
+
+    $ cat Dockerfile
+    FROM ubuntu
+    USER 10:10
+    CMD ["/bin/bash"]
+
+    $ docker build -t user . 
+    $ docker run -it user
+    uucp@65cd383e08dc:/$ id
+    uid=10(uucp) gid=10(uucp) groups=10(uucp)
+

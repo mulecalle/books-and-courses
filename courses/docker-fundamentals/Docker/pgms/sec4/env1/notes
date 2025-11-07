@@ -1,0 +1,39 @@
+
+                        Section 4 - Notes
+                      Environment Variables
+                             
+$ cd env1
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  webserver:
+    image: nginx
+    environment:
+      - API_KEY=8a53m7x02p58d8s1
+    ports:
+      - "8001:80"
+
+$ docker-compose up -d
+Creating network "env1_default" with the default driver
+Pulling webserver (nginx:latest)...
+latest: Pulling from library/nginx
+eff15d958d66: Pull complete
+1e5351450a59: Pull complete
+2df63e6ce2be: Pull complete
+9171c7ae368c: Pull complete
+020f975acd28: Pull complete
+266f639b35ad: Pull complete
+Digest: sha256:097c3a0913d7...b50bc8e35bcaa3691d788226e
+Status: Downloaded newer image for nginx:latest
+Creating env1_webserver_1 ... 
+Creating env1_webserver_1 ... done
+
+$ docker-compose ps
+      Name               Command          State   Ports        
+--------------------------------------------------------------
+env1_webserver_1   /docker-entrypoint...  Up      8001->80/tcp
+
+$ docker exec env1_webserver_1 env | grep API
+API_KEY=8a53m7x02p58d8s1
+

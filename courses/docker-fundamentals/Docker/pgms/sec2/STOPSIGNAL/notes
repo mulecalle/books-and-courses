@@ -1,0 +1,32 @@
+
+                        Section 2 - Notes
+                      STOPSIGNAL Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    FROM ubuntu:trusty
+    STOPSIGNAL SIGUSR1
+    CMD ["/bin/sleep", "30"]
+
+2.  Build image.
+
+    $ docker build -t ss .
+
+3.  Run detached ssc container.
+
+    $ docker run -d --name ssc ss
+
+4.  Verify container is running.
+
+    $ docker ps -a
+    CONTAINER ID   COMMAND           CREATED       STATUS       
+    14b8c4b53b1f   "/bin/sleep 30"   2 weeks ago   Up 1 second
+
+5.  Stop container.
+
+    $ docker stop ssc
+    ssc
+
+    Signal SIGUSR1 sent to container.
+    

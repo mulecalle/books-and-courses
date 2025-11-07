@@ -1,0 +1,33 @@
+
+                        Section 2 - Notes
+                        EXPOSE Instruction
+                   Nginix Server Standard Banner
+
+1.  Run detached webserver container. 
+    Map port 80 in container to port 5678 on host.
+
+    $ docker run -d --name webserver -p 5678:80 nginx
+
+2.  Show ports for webserver container.
+
+    $ docker port webserver
+    80/tcp -> 0.0.0.0:5678
+
+3.  Show HTML with curl localhost and port.
+
+    $ curl localhost:5678
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Welcome to nginx!</title>
+    . . .
+    </html>
+
+4.  Show in browser with URL.
+
+    http://localhost:5678
+
+5.  Cleanup
+
+    $ docker stop webserver
+    $ docker container prune -f

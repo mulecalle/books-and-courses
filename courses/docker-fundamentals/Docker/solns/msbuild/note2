@@ -1,0 +1,71 @@
+
+                            Lab Note 2
+                        Working with Pods
+                      Deploy Go Application
+
+$ cat Dockerfile
+# Dockerfile - Multi-stage build
+FROM golang AS builder
+COPY hello.go /app/
+WORKDIR /app
+ENV CGO_ENABLED=0
+RUN go build hello.go
+EXPOSE 8080
+CMD ["./hello"]
+
+FROM scratch
+WORKDIR /app
+COPY --from=builder /app/hello .
+CMD ["./hello"]
+
+$ docker build -t planderson/hello-go .
+
+$ docker push planderson/hello-go
+
+$ docker run --name goserver -d -p 8080:8080 planderson/hello-go
+
+$ curl localhost:8080
+Hello from Docker! Your request path is: /
+
+$ cat hello-go.yaml
+# hello-go.yaml - Pod manifest
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-go
+spec:
+  containers:
+  - image: planderson/hello-go
+    name: hello-go
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+
+$ kubectl apply -f hello-go.yaml
+pod/hello-go created
+
+$ kubectl get pods
+NAME       READY   STATUS    RESTARTS   AGE
+hello-go   1/1     Running   0          16s
+
+$ kubectl port-forward hello-go 8888:8080 &
+[1] 29075
+$ Forwarding from 127.0.0.1:8888 -> 8080
+Forwarding from [::1]:8888 -> 8080
+
+$ curl localhost:8888
+Handling connection for 8888
+Hello from Docker! Your request path is: /
+
+$ docker stop goserver
+goserver
+
+$ kubectl delete pod hello-go --wait=false
+pod "hello-go" deleted
+
+$ jobs
+[1]+  Running   kubectl port-forward hello-go 8888:8080 &
+
+$ kill %1
+[1]+  Terminated: 15  kubectl port-forward hello-go 8888:8080
+

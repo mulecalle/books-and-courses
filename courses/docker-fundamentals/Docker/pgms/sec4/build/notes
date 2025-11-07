@@ -1,0 +1,51 @@
+
+                        Section 4 - Notes
+                    Build Image and Run Service
+                             
+$ cd build
+
+$ cat echob.go
+// echob.go - echo command line args backwards
+package main
+import ("fmt"; "os")
+
+func main() {
+    nargs := len(os.Args)
+    for i := nargs-1; i > 0; i-- {
+        fmt.Printf("%s ", os.Args[i])
+    }
+    fmt.Println()
+}
+
+$ cat Dockerfile
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y golang
+COPY echob.go .
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  mygo:
+    build: .
+    image: mygo
+    command: [go, 'run', 'echob.go', 'one', 'two', 'three']
+
+$ docker-compose build
+Building mygo
+Step 1/3 : FROM ubuntu:latest
+Step 2/3 : RUN apt-get update && apt-get install -y golang
+Step 3/3 : COPY echob.go .
+Successfully built 51d1e3e68f92
+Successfully tagged mygo:latest
+
+$ docker image ls mygo
+REPOSITORY   TAG       IMAGE           SIZE
+mygo         latest    40f41b0a66d6    881MB
+
+$ docker-compose up
+Creating network "build_default" with the default driver
+Creating build_mygo_1 ... 
+Creating build_mygo_1 ... done
+Attaching to build_mygo_1
+mygo_1  | three two one 
+build_mygo_1 exited with code 0

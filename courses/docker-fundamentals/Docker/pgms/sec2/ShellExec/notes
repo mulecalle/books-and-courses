@@ -1,0 +1,75 @@
+
+                        Section 2 - Notes
+                      Shell and Exec Forms
+
+1.  ENV Dockerfiles
+
+    $ cd env1
+    $ cat Dockerfile
+    FROM busybox
+    ENV dir=/usr/bob/bkup
+    CMD echo "backing up to $dir" 
+
+    $ docker build -t env1 .
+    $ docker run env1
+    backing up to /usr/bob/bkup
+
+    $ cd env2
+    $ cat Dockerfile
+    FROM busybox
+    ENV dir=/usr/bob/bkup
+    CMD ["/bin/echo", "backing up to $dir"] 
+
+    $ docker build -t env2 .
+    $ docker run env2
+    backing up to $dir
+
+    $ cd env3
+    $ cat Dockerfile
+    FROM busybox
+    ENV dir=/usr/bob/bkup
+    CMD ["/bin/sh", "-c", "echo backing up to $dir"] 
+
+    $ docker build -t env3 .
+    $ docker run env3
+    backing up to /usr/bob/bkup
+
+2.  Sleep Dockerfiles
+
+    $ cd sleep1
+    $ cat Dockerfile
+    FROM ubuntu:trusty
+    CMD sleep 60
+
+    $ docker build -t sleep1 .
+    $ docker run -d sleep1
+    8bf145a1e783...efbdbac6ad8a02414eefe047d21838aadf7
+
+    $ docker ps -l
+    CONTAINER ID    IMAGE    COMMAND 
+    8bf145a1e783    sleep1   "/bin/sh -c 'sleep 60'"
+
+    $ docker exec 8bf145a1e783 ps -f
+    UID    PID  PPID  C STIME TTY      TIME CMD
+    root     1     0  0 01:55 ?    00:00:00 /bin/sh -c sleep 60
+    root     6     1  0 01:55 ?    00:00:00 sleep 60
+    root     7     0  0 01:56 ?    00:00:00 ps -f
+
+    $ cd sleep2
+    $ cat Dockerfile
+    FROM ubuntu:trusty
+    CMD ["/bin/sleep", "60"]
+
+    $ docker build -t sleep2 .
+    $ docker run -d sleep2
+    87cb500a620a...90ce7623f9ffb964adf698712533b0e8913
+
+    $ docker ps -l
+    CONTAINER ID   IMAGE    COMMAND 
+    87cb500a620a   sleep2   "/bin/sleep 60"
+
+    $ docker exec 87cb500a620a ps -f
+    UID        PID  PPID  C STIME TTY          TIME CMD
+    root         1     0  0 02:10 ?        00:00:00 /bin/sleep 60
+    root         7     0  0 02:10 ?        00:00:00 ps -f
+

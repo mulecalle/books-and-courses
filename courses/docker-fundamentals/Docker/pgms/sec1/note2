@@ -1,0 +1,44 @@
+
+
+                        Section 1 - Note 2
+                          Docker Overview
+                      Compressed Tar Archives
+
+1. Create mybbc container with progrium/busybox and run.
+
+   $ docker run -it --name mybbc progrium/busybox
+   / # opkg-install curl
+   / # curl --version
+   curl 7.66.0 (x86_64-openwrt-linux-gnu) libcurl/7.66.0 ...
+   / # exit
+
+2. Create mybbi image.
+
+   $ docker commit mybbc mybbi   
+
+3. Export mybbc container to tar file and compressed file.
+
+   $ docker export mybbc -o mybbc.tar
+   $ docker export mybbc | gzip > mybbc.gz 
+
+4. Compare sizes of tar file and compressed file.
+
+   $ ls -l
+   -rw-r--r--  1 gail  staff  2894524 Oct  9 10:55 mybbc.gz
+   -rw-------  1 gail  staff  5957632 Oct  9 10:55 mybbc.tar
+
+   Note the compressed file is half the size of the tar file.
+   
+5. Import the compressed file to new image.
+
+   $ gzcat mybbc.gz | docker import - mybbi
+
+   Note that gzcat is necessary on OSX, zcat works on linux.
+
+6. Run the image and verify curl is there.
+
+   $ docker run -it mybbi /bin/sh
+   / # curl --version
+   curl 7.66.0 (x86_64-openwrt-linux-gnu) libcurl/7.66.0 ...
+   / # exit
+ 

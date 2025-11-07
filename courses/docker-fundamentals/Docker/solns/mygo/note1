@@ -1,0 +1,83 @@
+
+                            Lab Note 1
+                         Docker Overview
+                         Custom Container
+
+$ docker pull ubuntu
+. . .
+
+$ docker run -it --name myubc ubuntu
+root@bf7663b7c33d:/# mkdir mydev
+root@bf7663b7c33d:/# cd mydev
+root@bf7663b7c33d:/mydev# apt-get update
+root@bf7663b7c33d:/mydev# apt-get install -y vim
+root@bf7663b7c33d:/mydev# apt-get install -y python3
+root@bf7663b7c33d:/mydev# apt-get install -y golang
+root@bf7663b7c33d:/mydev# python3 --version
+Python 3.6.9
+root@bf7663b7c33d:/mydev# go version
+go version go1.10.4 linux/amd64
+root@bf7663b7c33d:/mydev# exit
+
+$ docker cp echob.py myubc:/mydev
+$ docker cp echob.go myubc:/mydev
+
+$ docker start myubc
+myubc
+
+$ docker attach myubc
+root@bf7663b7c33d:/# cd mydev
+root@bf7663b7c33d:/mydev# ls
+echob.go  echob.py
+root@bf7663b7c33d:/mydev# python3 echob.py one two three
+three two one
+root@bf7663b7c33d:/mydev# go run echob.go one two three
+three two one
+root@bf7663b7c33d:/mydev# exit
+
+$ docker commit myubc myubi
+sha256:114d45a6132c8c...11957f4b3bde3ebd602a5ab123c306
+
+$ docker image ls myubi
+REPOSITORY  TAG            IMAGE ID           SIZE
+myubi       latest         114d45a6132c       624MB
+
+$ docker save myubi -o myubi.tar
+$ ls -l myubi.tar
+total 1279008
+-rw-------  1 paul  staff  640507904 Feb  3 17:37 myubi.tar
+
+$ docker rm myubc
+myubc
+
+$ docker rmi myubi
+Untagged: myubi:latest
+Deleted: sha256:114d45a6132c8...57f4b3bde3ebd602a5ab123c306
+Deleted: sha256:52811c6e3e734...f940d8cd6076be863e655ef466f
+
+$ docker load -i myubi.tar
+a73c1bd665f0: Loading layer  573.9MB/573.9MB
+Loaded image: myubi:latest
+
+$ docker image ls myubi
+REPOSITORY  TAG            IMAGE ID           SIZE
+myubi       latest         17e1505134a8       624MB
+
+$ docker run -it --name myubc myubi
+root@93a69e535ac2:/# cd mydev
+root@93a69e535ac2:/mydev# ls
+echob.go  echob.py
+root@93a69e535ac2:/mydev# python3 echob.py one two three
+three two one
+root@93a69e535ac2:/mydev# go run echob.go one two three
+three two one
+root@93a69e535ac2:/mydev# exit
+
+$ docker rm myubc
+myubc
+
+$ docker rmi myubi
+Untagged: myubi:latest
+Deleted: sha256:114d45a6132c8...57f4b3bde3ebd602a5ab123c306
+Deleted: sha256:52811c6e3e734...f940d8cd6076be863e655ef466f
+

@@ -1,0 +1,46 @@
+
+                        Section 2 - Notes
+                       WORKDIR Instruction
+
+1.  Initial Dockerfile
+
+    $ cat Dockerfile
+    # Dockerfile for WORKDIR instruction
+    FROM busybox
+    WORKDIR /usr/paul/music
+    WORKDIR jazz
+    WORKDIR rock
+    CMD ["/bin/sh"]
+
+2.  Build image.
+
+    $ docker build -t workdir . 
+
+3.  Enter container and show directories.
+
+    $ docker run -it workdir
+    /usr/paul/music/jazz/rock # exit
+
+4.  Final Dockerfile
+
+    $ cat Dockerfile
+    # Dockerfile for WORKDIR instruction
+    FROM busybox
+    WORKDIR /usr/paul/music
+    WORKDIR jazz
+    WORKDIR rock
+    ENV SRC_DIR=/usr/paul/myfiles
+    WORKDIR $SRC_DIR
+    COPY data $SRC_DIR
+    CMD ["/bin/sh"]
+
+5.  Build image.
+
+    $ docker build -t workdir . 
+
+6.  Enter container and show directories.
+
+    $ docker run -it workdir
+    /usr/paul/myfiles # ls
+    data
+    /usr/paul/myfiles # exit

@@ -1,0 +1,12 @@
+# hello-go.yaml - Pod manifest
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-go
+spec:
+  containers:
+  - image: planderson/hello-go
+    name: hello-go
+    ports:
+    - containerPort: 8080
+      protocol: TCP

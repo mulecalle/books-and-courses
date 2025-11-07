@@ -1,0 +1,60 @@
+
+                            Lab Note 2
+                        Working with Docker
+                            Dockerfiles
+
+$ cat Dockerfile
+# Dockerfile for mygo image
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y python3 golang
+WORKDIR mydev
+COPY echob.py echob.go ./
+RUN chmod +x echob.py
+CMD ["/bin/bash"]
+
+$ docker build -t mygo .
+Sending build context to Docker daemon  640.5MB
+. . .
+Successfully built 53efaf546753
+Successfully tagged mygo:latest
+
+$ docker image ls mygo
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+mygo         latest    53efaf546753   4 minutes ago   896MB
+
+$ docker run -it mygo
+root@83bd9231ea4a:/mydev# ls -l
+total 8
+-rw-r--r-- 1 root root 321 Feb  1 00:35 echob.go
+-rwxr-xr-x 1 root root 308 Feb  1 00:35 echob.py
+root@83bd9231ea4a:/mydev# ./echob.py one two three
+three two one
+root@83bd9231ea4a:/mydev# go run echob.go one two three
+three two one
+root@83bd9231ea4a:/mydev# exit
+
+$ cat Dockerfile
+# Dockerfile for mygo image
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y python3 golang
+WORKDIR mydev
+COPY echob.py echob.go ./
+RUN chmod +x echob.py
+ENTRYPOINT ["/usr/bin/go", "run", "echob.go"]
+CMD ["one", "two", "three"]
+
+$ docker build -t mygo .
+Sending build context to Docker daemon  640.5MB
+. . .
+Successfully built a54f824d8915
+Successfully tagged mygo:latest
+
+$ docker image ls mygo
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+mygo         latest    a54f824d8915   8 minutes ago   881MB
+
+$ docker run mygo
+three two one
+
+$ docker run mygo uno dos tres
+tres dos uno

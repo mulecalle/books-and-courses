@@ -1,0 +1,114 @@
+
+                        Section 4 - Notes
+                            Networks
+                             
+$ cd networks
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  web1:
+    image: nginx
+    ports:
+      - "8001:80"
+    networks:
+      - myPublic
+  myapp:
+    image: busybox
+    networks:
+      - myPublic
+    command: [tail, '-f', '/dev/null']
+  mypgm:
+    image: alpine
+    networks:
+      - myPrivate
+    command: [tail, '-f', '/dev/null']
+networks:
+  myPublic: {}
+  myPrivate: {}
+
+$ docker-compose up -d
+Creating network "networks_myPublic" with the default driver
+Creating network "networks_myPrivate" with the default driver
+Pulling web1 (nginx:latest)...
+latest: Pulling from library/nginx
+eff15d958d66: Pull complete1e5351450a59: Pull complete2df63e6ce2be: Pull complete9171c7ae368c: Pull complete020f975acd28: Pull complete266f639b35ad: 
+Pull completeDigest: sha256:097c3a0913d7...2b50bc8e35bcaa3691d788226e
+Status: Downloaded newer image for nginx:latest
+Pulling myapp (busybox:latest)...
+latest: Pulling from library/busybox
+e685c5c858e3: Pull completeDigest: sha256:e7157b6d7ebb...323546c353
+Status: Downloaded newer image for busybox:latest
+Creating networks_web1_1 ... 
+Creating networks_mypgm_1 ... 
+Creating networks_myapp_1 ... 
+Creating networks_mypgm_1
+Creating networks_web1_1
+Creating networks_myapp_1 ... done
+
+$ docker-compose ps
+      Name                    Command    State     Ports        
+---------------------------------------------------------------
+networks_myapp_1   tail -f /dev/null     Up                          
+networks_mypgm_1   tail -f /dev/null     Up                          
+networks_web1_1    /docker... nginx      Up        8001->80/tcp
+
+$ docker network ls
+NETWORK ID          NAME                 DRIVER    SCOPE
+2b8eeec4b2eb        bridge               bridge    local
+88455cd35b8a        host                 host      local
+91c6fff25575        networks_myPrivate   bridge    local
+0fa7323aac9b        networks_myPublic    bridge    local
+6da33a989cef        none                 null      local
+
+$ curl localhost:8001
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+. . .
+</html>
+
+# myapp can ping web1, same network
+# myapp cannot ping mypgm, different network 
+$ docker-compose exec myapp sh
+/ # ping -c3 web1
+PING web1 (172.19.0.3): 56 data bytes
+64 bytes from 172.19.0.3: seq=0 ttl=64 time=0.266 ms
+64 bytes from 172.19.0.3: seq=1 ttl=64 time=0.155 ms
+64 bytes from 172.19.0.3: seq=2 ttl=64 time=0.119 ms
+
+--- web1 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.119/0.180/0.266 ms
+/ # ping -c3 mypgm
+ping: bad address 'mypgm'
+/ # exit
+
+# mypgm cannot ping web1 or myapp, different network
+# mypgm can ping outside service
+$ docker-compose exec mypgm sh
+/ # ping -c3 web1
+ping: bad address 'web1'
+/ # ping -c3 myapp
+ping: bad address 'myapp'
+/ # ping -c3 python.org
+PING python.org (138.197.63.241): 56 data bytes
+64 bytes from 138.197.63.241: seq=0 ttl=51 time=89.503 ms
+64 bytes from 138.197.63.241: seq=1 ttl=51 time=89.564 ms
+64 bytes from 138.197.63.241: seq=2 ttl=51 time=89.483 ms
+
+--- python.org ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 89.483/89.516/89.564 ms
+/ # exit
+
+$ docker-compose down
+Stopping networks_myapp_1 ... done
+Stopping networks_mypgm_1 ... done
+Stopping networks_web1_1  ... done
+Removing networks_myapp_1 ... done
+Removing networks_mypgm_1 ... done
+Removing networks_web1_1  ... done
+Removing network networks_myPublic
+Removing network networks_myPrivate

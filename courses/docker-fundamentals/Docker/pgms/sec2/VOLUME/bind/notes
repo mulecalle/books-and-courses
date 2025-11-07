@@ -1,0 +1,48 @@
+
+                        Section 2 - Notes
+                        VOLUME Instruction
+                           Bind Mounts
+
+1.  Show file in host directory.
+
+    $ cat data/file.txt
+    This is line 1.
+
+2.  Run detached volc container, keep running with tail command.
+    Bind source data dir to target /app directory in volc container.
+
+    $ docker run -d --name volc --mount type=bind,
+        source="$(pwd)"/data,target=/app alpine tail -f /dev/null 
+
+3.  Show volc container running.
+
+    $ docker ps
+    CONTAINER ID   IMAGE        COMMAND           NAME
+    5bd0eb407287   alpine   "tail -f /dev/null"   volc
+  
+4.  Show host file has been mapped to container.
+
+    $ docker exec volc cat /app/file.txt
+    This is line 1.
+
+5.  Enter container and put another line in /app/file.txt.
+
+    $ docker exec -it volc sh
+    / # ls
+    app    dev    home   media  opt    root   sbin   sys    usr
+    bin    etc    lib    mnt    proc   run    srv    tmp    var
+    / # echo "This is line 2." >> app/file.txt
+    / # exit
+
+6.  Verify that file has been updated in host code directory.
+
+    $ cat data/file.txt
+    This is line 1.
+    This is line 2.
+
+7.  Cleanup
+
+    $ docker stop volc 
+    $ docker container prune -f
+    $ docker image prune -f
+

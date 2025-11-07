@@ -1,0 +1,183 @@
+
+                             Lab Notes
+                        More Docker Topics
+                         Docker Networking
+                        
+1.  Create volume
+    
+    $ docker volume create myvol
+    myvol
+
+    $ docker volume ls
+    DRIVER              VOLUME NAME
+    local               mvol
+
+2.  Create custom banner in html subdirectory.
+
+    $ cat html/index.html
+    <html>
+    <body>
+    <h1>Hello from Docker!</h1>
+    </body>
+    </html>
+
+3.  Create docker container to store custom banner
+
+    $ docker create --name myctr -v myvol:/root alpine
+    
+4.  Copy banner file to docker container
+
+    $ docker cp html myctr:/root/html
+
+5.  Run detached web containers. 
+    Use volume myvol to make index.html available to nginx.
+    Map port 80 in web1 container to port 8001 on host.
+    Map port 80 in web2 container to port 8002 on host.
+    
+    $ docker run -d --name web1 \
+        -v myvol:/usr/share/nginx/:ro -p 8001:80 nginx
+    796fad84c321...84ccc1ad65c96143be38574d97d619fd3
+        
+    $ docker run -d --name web2 \
+        -v myvol:/usr/share/nginx/:ro -p 8002:80 nginx
+    12431306689b...52e9f9d2d8526301e47b08b09083cfab9
+
+6.  Verify containers are up and running.
+
+    $ docker ps -a    
+    CONTAINER ID    IMAGE    COMMAND                  NAMES
+    796fad84c321    nginx    "/docker-entrypoint.…"   web1
+    12431306689b    nginx    "/docker-entrypoint.…"   web2
+    
+7.  Show ports for web containers.
+
+    $ docker port web1
+    80/tcp -> 0.0.0.0:8001
+    
+    $ docker port web2
+    80/tcp -> 0.0.0.0:8002
+
+8.  Show HTML with curl localhost and port.
+
+    $ curl localhost:8001
+    <html>
+    <body>
+    <h1>Hello from Docker!</h1>
+    </body>
+    </html>
+    
+    $ curl localhost:8002
+    <html>
+    <body>
+    <h1>Hello from Docker!</h1>
+    </body>
+    </html>
+
+9.  Show banner in browser with URL.
+
+    http://localhost:8001     http://localhost:8002
+
+10. Create network
+    
+    $ docker network create myNetwork
+    b1bfd8233382...e81d889bedfd28009fb5d2246ba0c
+
+    $ docker network ls
+    NETWORK ID          NAME                DRIVER              SCOPE
+    66b6a5e0c627        bridge              bridge              local
+    88455cd35b8a        host                host                local
+    b1bfd8233382        myNetwork           bridge              local
+    6da33a989cef        none                null                local
+
+11. Connect web servers to network
+
+    $ docker network connect myNetwork web1
+    
+    $ docker network connect myNetwork web2
+    
+12. Inspect network
+
+    $ docker network inspect myNetwork
+    [
+    {
+        "Name": "myNetwork",
+        "Id": "b1bfd82333821fd5d799dd2711ec69c6360e81d889bedfd28009fb5d2246ba0c",
+        "Created": "2021-11-23T18:38:29.367136107Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.19.0.0/16",
+                    "Gateway": "172.19.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "12431306689bfd131890fe95e698ce23fe6457c548f220d003c926021b7b27aa": {
+                "Name": "web2",
+                "EndpointID": "30f88f2b4f67...db38f91f438b463503737",
+                "MacAddress": "02:42:ac:13:00:03",
+                "IPv4Address": "172.19.0.3/16",
+                "IPv6Address": ""
+            },
+            "796fad84c321fe3fb5341979ff686a26101317170aa33ebd9bfe11789e490f9c": {
+                "Name": "web1",
+                "EndpointID": "437aa545...757332ce68f3ad15ef734b369",
+                "MacAddress": "02:42:ac:13:00:02",
+                "IPv4Address": "172.19.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+13. Show web1, web2 containers
+
+    $ curl 172.19.0.2
+    <html>
+    <body>
+    <h1>Hello from Docker!</h1>
+    </body>
+    </html>
+    
+    $ curl 172.19.0.3
+    <html>
+    <body>
+    <h1>Hello from Docker!</h1>
+    </body>
+    </html>
+    
+14. Cleanup containers, volumes, network
+
+    $ docker network disconnect myNetwork web1
+    $ docker network disconnect myNetwork web2
+    
+    $ docker stop web1 web2 
+    web1
+    web2
+    
+    $ docker rm web1 web2 
+    web1
+    web2
+    
+    $ docker container prune -f
+
+    $ docker volume rm myvol
+    myvol
+    
+    $ docker network rm myNetwork
+    myNetwork
+

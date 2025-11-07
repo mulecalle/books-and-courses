@@ -1,0 +1,49 @@
+
+                        Section 2 - Notes
+                        VOLUME Instruction
+                          Sharing Volumes
+
+1.  Show file contents in host data directory.
+
+    $ cat data/file.txt
+    This is line 1.
+    This is line 2.
+
+2.  Run detached volc1 container with -v option. 
+    Map host data in current dir to /app in volc1 container.
+
+    $ docker run -d --name volc1 -v "$(pwd)"/data:/app \
+    alpine tail -f /dev/null
+
+3.  Show file.txt in host data directory mapped to 
+    /app/file.txt in volc1 container.
+
+    $ docker exec volc1 cat /app/file.txt
+    This is line 1.
+    This is line 2. 
+
+4.  Run detached volc2 container with --volumes-from option.
+    Share volume with volc1.
+
+    $ docker run -d --name volc2 --volumes-from volc1 \
+    alpine tail -f /dev/null
+
+5.  Show file.txt in host data directory shared 
+    between volc1 and volc2 containers.
+
+    $ docker exec volc2 cat /app/file.txt
+    This is line 1.
+    This is line 2. 
+
+6.  Delete second line in data/file.txt on host.
+
+    $ cat data/file.txt
+    This is line 1.
+
+7.  Verify that shared files are seen by both containers.
+
+    $ docker exec volc1 cat /app/file.txt
+    This is line 1.
+
+    $ docker exec volc2 cat /app/file.txt
+    This is line 1.

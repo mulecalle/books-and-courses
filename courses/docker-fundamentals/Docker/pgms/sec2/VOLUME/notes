@@ -1,0 +1,50 @@
+
+                        Section 2 - Notes
+                        VOLUME Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    # Dockerfile for VOLUME instruction
+    FROM alpine
+    RUN mkdir /myvol
+    RUN echo "this is some text" > /myvol/data
+    VOLUME /myvol
+    CMD ["/bin/sh"]
+
+2.  Build image.
+
+    $ docker build -t vol .
+
+3.  Run container and show data in /mvol.
+
+    $ docker run -it vol
+    / # cat /myvol/data
+    this is some text
+    / # exit
+
+4. Show volume.
+
+   $ docker volume ls
+   DRIVER              VOLUME NAME
+   local               a2d19de6460...
+  
+5. Inspect volume.
+
+   $ docker volume inspect a2d19de6460...
+   [
+    {
+        "CreatedAt": "2019-09-20T09:13:22Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/
+             a2d19de6460.../_data",
+        "Name": "a2d19de6460...",
+        "Options": null,
+        "Scope": "local"
+    }
+   ]
+
+6. Cleanup
+
+   $ docker container prune -f ; docker volume prune -f

@@ -1,0 +1,42 @@
+
+                        Section 2 - Notes
+                     HEALTHCHECK Instruction
+                           Apache App
+
+1.  Add HEALTHCHECK instruction in Dockerfile.
+
+    $ cat Dockerfile
+    # Dockerfile for Apache Web Server
+    FROM httpd:latest
+    COPY index.html /usr/local/apache2/htdocs/
+    HEALTHCHECK CMD curl --fail http://localhost:1234/ || exit 0
+    EXPOSE 80
+
+2.  Rebuild Apache image.
+
+    $ docker build -t apache .
+
+3.  Run detached webserver container. 
+    Map port 80 in container to port 1234 on host.
+
+    $ docker run -d --name webserver -p 1234:80 apache
+
+4.  Test with curl localhost and port.
+
+    $ curl localhost:1234
+
+5.  Show in browser with URL.
+
+    http://localhost:1234
+
+6.  Check health.
+
+    $ docker ps
+    CONTAINER ID    IMAGE    COMMAND             STATUS 
+    468f22556a9b    apache   "httpd-foreground"  Up 5 min (healthy)
+
+7.  Cleanup
+
+    $ docker stop webserver
+    $ docker container prune -f
+    $ docker image prune -f

@@ -1,0 +1,7 @@
+version: '3'
+services:
+  myports:
+    build: .
+    image: myports
+    ports:
+      - "1234:80"

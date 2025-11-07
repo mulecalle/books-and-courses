@@ -1,0 +1,49 @@
+
+                        Section 2 - Notes
+                        SHELL Instruction
+
+1.  Dockerfile without SHELL instruction.
+
+    $ cat Dockerfile
+    FROM ubuntu:trusty
+    CMD sleep 60
+
+2.  Build image.
+
+    $ docker build -t sc . 
+
+3.  Run detached shell container.
+
+    $ docker run -d --name shell sc 
+
+4.  Look at shell used by container.
+
+    $ docker ps -l
+    CONTAINER ID   IMAGE          COMMAND          
+    882b6e257c4f    sc     "/bin/sh -c 'sleep 60'"
+
+    Note that default shell is /bin/sh.
+    
+5.  Dockerfile with SHELL instruction.
+
+    $ cat Dockerfile
+    FROM ubuntu:trusty
+    SHELL ["/bin/bash", "-c"]
+    CMD sleep 60
+
+6.  Remove old detached shell container
+
+    $ docker container rm shell
+
+7.  Build image and detached shell container.
+
+    $ docker build -t sc . 
+    $ docker run -d --name shell sc 
+
+8.  Look at shell used by container.
+
+    $ docker ps -l
+    CONTAINER ID   IMAGE        COMMAND             
+    a1a7fcf5975f    sc    "/bin/bash -c 'sleep 60'"
+
+    Note that default shell is now /bin/bash.

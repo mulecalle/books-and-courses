@@ -1,0 +1,22 @@
+version: '3'
+services:
+  web1:
+    build: .
+    image: web1
+    ports:
+      - "8001:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+    networks:
+      - myNetwork
+  web2:
+    build: .
+    image: web2
+    ports:
+      - "8002:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+    networks:
+      - myNetwork
+networks:
+  myNetwork: {}

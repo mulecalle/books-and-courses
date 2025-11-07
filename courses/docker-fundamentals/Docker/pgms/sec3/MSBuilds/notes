@@ -1,0 +1,57 @@
+
+                        Section 3 - Notes
+                        Multi-Stage Builds
+
+1.  Initial Dockerfile 
+    FROM ubuntu:latest
+    RUN apt-get update && apt-get install -y gcc
+    WORKDIR /root
+    COPY greeting.c .
+    RUN gcc greeting.c -o greeting
+    CMD ["./greeting"]
+
+2.  Build image.
+
+    $ docker build -t myub1 . 
+
+3.  Run C program in myub1 image.
+   
+    $ docker run myub1
+    hello there.
+
+4.  Show image size.
+
+    $ docker image ls myub1
+    REPOSITORY    TAG         IMAGE ID         SIZE
+    myub1         latest      8bd897a6144c     281MB
+
+5.  Multi-Stage Dockerfile
+    FROM ubuntu:latest AS compile-image
+    RUN apt-get update && apt-get install -y gcc
+    WORKDIR /root
+    COPY greeting.c .
+    RUN gcc greeting.c -o greeting
+    
+    FROM ubuntu:latest AS runtime-image
+    COPY --from=compile-image /root/greeting .
+    CMD ["./greeting"]
+
+6.  Build multi-stage image.
+
+    $ docker build -t myub2 . 
+
+7.  Run C program in myub2 image.
+   
+    $ docker run myub2
+    hello there.
+
+8.  Show image size.
+
+    $ docker image ls myub2
+    REPOSITORY    TAG         IMAGE ID         SIZE
+    myub2         latest      b351671a7d41     77.8MB
+
+    Note the myub1 image size (281MB) is much larger 
+    than the myub2 image size (77.8MB). Why?
+    Because the gcc compiler layer is NOT included in myub2.
+

@@ -1,0 +1,21 @@
+version: '3'
+services:
+  web1:
+    image: nginx
+    ports:
+      - "8001:80"
+    networks:
+      - myPublic
+  myapp:
+    image: busybox
+    networks:
+      - myPublic
+    command: [tail, '-f', '/dev/null']
+  mypgm:
+    image: alpine
+    networks:
+      - myPrivate
+    command: [tail, '-f', '/dev/null']
+networks:
+  myPublic: {}
+  myPrivate: {}

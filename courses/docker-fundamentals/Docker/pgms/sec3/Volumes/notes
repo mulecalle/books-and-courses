@@ -1,0 +1,101 @@
+
+                        Section 3 - Notes
+                             Volumes
+                             
+
+$ docker volume create
+3f54949e70f783ba2d914a420f2941d9fc45132d4e27653a29638bfbaa11a208
+
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               3f54949e70f783ba2d914a420f2941d9fc45132d4e27653a29638bfbaa11a208
+
+$ docker volume create myvol
+myvol
+
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               3f54949e70f783ba2d914a420f2941d9fc45132d4e27653a29638bfbaa11a208
+local               myvol
+
+$ docker volume inspect myvol
+[
+    {
+        "CreatedAt": "2021-11-20T18:24:11Z",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/myvol/_data",
+        "Name": "myvol",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+
+Note: must be root to access Mountpoint and data
+
+# ls -l /var/lib/docker/volumes/myvol
+total 4
+drwxr-xr-x 2 root root 4096 Nov 20 18:24 _data 
+
+# ls /var/lib/docker/volumes/myvol/_data
+#
+
+# cat file.txt
+This is line 1.
+This is line 2.
+
+# cp file.txt /var/lib/docker/volumes/myvol/_data
+
+# cat /var/lib/docker/volumes/myvol/_data/file.txt
+This is line 1.
+This is line 2.
+
+$ docker run -d --name volc1 -v myvol:/app alpine tail -f /dev/null
+3e77225613695681acf1e7fcc4a18a4e4d9e231a2be18bf49b519bf2fd0913ed
+
+$ docker exec volc1 cat /app/file.txt
+This is line 1.
+This is line 2.
+
+$ docker run -d --name volc2 --volumes-from volc1 alpine tail -f /dev/null
+2e5ee53c165fe2c908ab9cce6f0f32e70b5ea978fedb6c5d764d56691c4935db
+
+$ docker exec volc2 cat /app/file.txt
+This is line 1.
+This is line 2.
+
+$ docker exec -it volc2 sh
+/ # echo This is line 3. >> /app/file.txt
+/ # cat /app/file.txt
+This is line 1.
+This is line 2.
+This is line 3.
+/ # exit
+
+$ docker exec volc1 cat /app/file.txt
+This is line 1.
+This is line 2.
+This is line 3.
+
+# cat /var/lib/docker/volumes/myvol/_data/file.txt
+This is line 1.
+This is line 2.
+This is line 3.
+
+# Cleanup containers and volumes
+$ docker stop volc1 volc2
+volc1
+volc2
+
+$ docker container prune -f
+Deleted Containers:
+e2f1417f519ad6a749f62f0f8f162038c7e5648fa7f287992c62f04dd6b1c73f
+e1d0b359baf0d1e4c1fa89d7dee0acb2a2dee8961c08f60a704f80b27b8b3734
+Total reclaimed space: 0B
+
+$ docker volume rm myvol
+myvol
+
+# cat /var/lib/docker/volumes/myvol/_data/file.txt
+cat: /var/lib/docker/volumes/myvol/_data/file.txt: No such file or directory
+

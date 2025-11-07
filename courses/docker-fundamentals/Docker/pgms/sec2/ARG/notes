@@ -1,0 +1,51 @@
+
+                        Section 2 - Notes
+                         ARG Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    FROM ubuntu
+    ARG username="10"
+    ARG appdir
+    COPY text? /$appdir/
+    WORKDIR $appdir/
+    USER $username
+    CMD ["/bin/bash"]
+
+2.  Build without ARGs set for username and appdir.
+
+    $ docker build -t arg . 
+
+    $ docker run -it arg
+    uucp@d1321e494249:/$ ls
+    bin   dev  home  lib64  mnt  proc  run  srv  text1  text3  usr
+    boot  etc  lib   media  opt  root  sbin sys  text2  tmp    var
+    uucp@d1321e494249:/$ exit
+
+    Shell prompt shows USER is uucp (10) and 
+    appdir is / since no ARGS were set.
+
+3.  Build with appdir set.
+
+    $ docker build -t arg --build-arg appdir="tmp" . 
+
+    $ docker run -it arg
+    uucp@6bb900af1cea:/tmp$ ls
+    text1  text2  text3
+    uucp@6bb900af1cea:/tmp$ exit
+
+    Shell prompt shows USER is uucp (10) and appdir is /tmp.
+
+4.  Build with appdir and username set.
+
+    $ docker build -t arg --build-arg appdir="tmp" \
+           --build-arg username="5" . 
+
+    $ docker run -it arg
+    games@161c451a5d48:/tmp$ ls
+    text1  text2  text3
+    games@161c451a5d48:/tmp$ exit
+
+    Shell prompt shows USER is games (5) and appdir is /tmp.
+

@@ -1,0 +1,8 @@
+version: '3'
+services:
+  webserver:
+    image: nginx
+    environment:
+      - API_KEY=${KEY}
+    ports:
+      - "8002:80"

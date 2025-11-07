@@ -1,0 +1,44 @@
+
+                        Section 2 - Notes
+                         ADD Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    # Dockerfile for ADD instruction
+    FROM ubuntu
+    ADD text.tar /text
+    CMD ["/bin/bash"]
+
+2.  Show tar file on host.
+
+    $ tar tvf text.tar
+    -rw-r--r--  0 gail   staff      18 Oct  7 17:00 text1
+    -rw-r--r--  0 gail   staff      18 Oct  7 17:01 text2
+    -rw-r--r--  0 gail   staff      20 Oct  7 17:01 text3
+
+3.  Show file contents.
+
+    $ cat text?
+    This is line one.
+    This is line two.
+    This is line three.
+
+4.  Build image.
+
+    $ docker build -t add . 
+
+5.  Run container and show tar file extraction.
+
+    $ docker run -it add
+    root@15181fef7553:/# ls
+    bin   dev  home  lib64  mnt  proc  run   srv  text  usr
+    boot  etc  lib   media  opt  root  sbin  sys  tmp   var
+    root@15181fef7553:/# cd text
+    root@15181fef7553:/text# ls
+    text1  text2  text3
+    root@15181fef7553:/text# cat text?
+    This is line one.
+    This is line two.
+    This is line three.
+

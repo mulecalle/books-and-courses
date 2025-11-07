@@ -1,0 +1,196 @@
+
+                        Section 3 - Notes
+                             Networks
+                             
+
+$ docker network ls
+NETWORK ID          NAME           DRIVER         SCOPE
+17922f6a8984        bridge         bridge         local
+88455cd35b8a        host           host           local
+6da33a989cef        none           null           local
+
+$ docker run -d --name mybridge1 alpine tail -f /dev/null
+801a6b714102f059bf873a2271e6feebfbeeb472f5a605cc72ba23413bcfb5f3
+
+$ docker run -d --name mybridge2 alpine tail -f /dev/null
+42e996e721c5ba2973b335a8e4ae7ce86c9147b9111f1f82ba43a3a03d4d01e0
+
+$ docker ps -a
+CONTAINER ID       IMAGE     COMMAND                NAMES
+42e996e721c5       alpine    "tail -f /dev/null"    mybridge2
+801a6b714102       alpine    "tail -f /dev/null"    mybridge1
+
+$ docker network create myNetwork
+1881d1bad7bb28f86f86f4d8b72fe9ac575bbeb59672056fda6886e3341ed35e
+
+$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+6df1558ff5f3        bridge              bridge              local
+88455cd35b8a        host                host                local
+1881d1bad7bb        myNetwork           bridge              local
+6da33a989cef        none                null                local
+
+$ docker network connect myNetwork mybridge1
+$ docker network connect myNetwork mybridge2
+
+$ docker network inspect myNetwork
+[
+    {
+        "Name": "myNetwork",
+        "Id": "1881d1bad7bb28f86f86f4d8b72fe9ac575bbeb59672056fda6886e3341ed35e",
+        "Created": "2021-11-21T22:58:54.114938578Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.19.0.0/16",
+                    "Gateway": "172.19.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "42e996e721c5ba2973b335a8e4ae7ce86c9147b9111f1f82ba43a3a03d4d01e0": {
+                "Name": "mybridge2",
+                "EndpointID": "3d5e7f60ef8b...c7a44e2aa22b6ba95a",
+                "MacAddress": "02:42:ac:13:00:03",
+                "IPv4Address": "172.19.0.3/16",
+                "IPv6Address": ""
+            },
+            "801a6b714102f059bf873a2271e6feebfbeeb472f5a605cc72ba23413bcfb5f3": {
+                "Name": "mybridge1",
+                "EndpointID": "18562f54ffa6...23c7a927a04f4dc912",
+                "MacAddress": "02:42:ac:13:00:02",
+                "IPv4Address": "172.19.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+$ ping -c3 172.19.0.2      # mybridge1 container
+PING 172.19.0.2 (172.19.0.2) 56(84) bytes of data.
+64 bytes from 172.19.0.2: icmp_seq=1 ttl=64 time=0.098 ms
+64 bytes from 172.19.0.2: icmp_seq=2 ttl=64 time=0.080 ms
+64 bytes from 172.19.0.2: icmp_seq=3 ttl=64 time=0.077 ms
+--- 172.19.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2037ms
+rtt min/avg/max/mdev = 0.077/0.085/0.098/0.009 ms
+
+$ ping -c3 172.19.0.3      # mybridge2 container
+PING 172.19.0.3 (172.19.0.3) 56(84) bytes of data.
+64 bytes from 172.19.0.3: icmp_seq=1 ttl=64 time=0.098 ms
+64 bytes from 172.19.0.3: icmp_seq=2 ttl=64 time=0.080 ms
+64 bytes from 172.19.0.3: icmp_seq=3 ttl=64 time=0.077 ms
+--- 172.19.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2037ms
+rtt min/avg/max/mdev = 0.077/0.085/0.098/0.009 ms
+
+$ docker exec mybridge1 ping -c3 mybridge2
+PING mybridge2 (172.19.0.3): 56 data bytes
+64 bytes from 172.19.0.3: seq=0 ttl=64 time=0.064 ms
+64 bytes from 172.19.0.3: seq=1 ttl=64 time=0.098 ms
+64 bytes from 172.19.0.3: seq=2 ttl=64 time=0.134 ms
+--- mybridge2 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.064/0.098/0.134 ms
+
+$ docker exec mybridge2 ping -c3 mybridge1
+PING mybridge1 (172.19.0.2): 56 data bytes
+64 bytes from 172.19.0.2: seq=0 ttl=64 time=0.088 ms
+64 bytes from 172.19.0.2: seq=1 ttl=64 time=0.241 ms
+64 bytes from 172.19.0.2: seq=2 ttl=64 time=0.151 ms
+--- mybridge1 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.088/0.160/0.241 ms
+
+$ docker exec mybridge1 ping -c3 python.org
+PING python.org (138.197.63.241): 56 data bytes
+64 bytes from 138.197.63.241: seq=0 ttl=51 time=88.209 ms
+64 bytes from 138.197.63.241: seq=1 ttl=51 time=88.391 ms
+64 bytes from 138.197.63.241: seq=2 ttl=51 time=88.139 ms
+--- python.org ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 88.139/88.246/88.391 ms
+
+$ docker exec -it mybridge2 sh
+/ # ping -c3 python.org
+PING python.org (138.197.63.241): 56 data bytes
+64 bytes from 138.197.63.241: seq=0 ttl=51 time=87.576 ms
+64 bytes from 138.197.63.241: seq=1 ttl=51 time=87.926 ms
+64 bytes from 138.197.63.241: seq=2 ttl=51 time=89.000 ms
+
+--- python.org ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 87.576/88.167/89.000 ms
+/ # exit
+
+$ ping -c3 172.19.0.2
+PING 172.19.0.2 (172.19.0.2) 56(84) bytes of data.
+64 bytes from 172.19.0.2: icmp_seq=1 ttl=64 time=0.113 ms
+64 bytes from 172.19.0.2: icmp_seq=2 ttl=64 time=0.079 ms
+64 bytes from 172.19.0.2: icmp_seq=3 ttl=64 time=0.073 ms
+
+--- 172.19.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2056ms
+rtt min/avg/max/mdev = 0.073/0.088/0.113/0.019 ms
+$ ping -c3 172.19.0.3
+PING 172.19.0.3 (172.19.0.3) 56(84) bytes of data.
+64 bytes from 172.19.0.3: icmp_seq=1 ttl=64 time=0.107 ms
+64 bytes from 172.19.0.3: icmp_seq=2 ttl=64 time=0.072 ms
+64 bytes from 172.19.0.3: icmp_seq=3 ttl=64 time=0.071 ms
+
+--- 172.19.0.3 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2046ms
+rtt min/avg/max/mdev = 0.071/0.083/0.107/0.018 ms
+
+$ docker network disconnect myNetwork mybridge1
+$ docker network disconnect myNetwork mybridge2
+
+$ docker network inspect myNetwork 
+[
+    {
+        "Name": "myNetwork",
+        "Id": "1881d1bad7bb28f86f86f4d8b72fe9ac575bbeb59672056fda6886e3341ed35e",
+        "Created": "2021-11-21T22:58:54.114938578Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.19.0.0/16",
+                    "Gateway": "172.19.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+$ docker network rm myNetwork
+
+

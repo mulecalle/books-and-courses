@@ -10,6 +10,7 @@ Random learnings from multiple resources.
 ### Courses
 - [Aws Certified Cloud Practitioner](./courses/AWS-certified-cloud-practitioner)
 - [Basic Buildpack](./courses/basic-buildpack)
+- [Docker Fundamentals](./courses/docker-fundamentals)
 - [Getting Started Nlp](./courses/getting-started-nlp)
 - [Key Concepts Machine Learning](./courses/key-concepts-machine-learning)
 - [Learning Python](./courses/learning-python)
@@ -18,5 +19,4 @@ Random learnings from multiple resources.
 - [Rust Fundamentals](./courses/rust-fundamentals)
 - [Semantic Search](./courses/semantic-search)
 - [Understanding Machine Learning](./courses/understanding-machine-learning)
-
 

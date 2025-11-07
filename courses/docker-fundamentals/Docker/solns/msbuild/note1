@@ -1,0 +1,111 @@
+
+                            Lab Note 1
+                       Working with Docker
+                        Multi-Stage Builds
+
+$ cat Dockerfile
+# Dockerfile - Single Stage
+FROM golang:alpine
+COPY hello.go /app/
+WORKDIR /app
+ENV CGO_ENABLED=0
+RUN go build hello.go
+EXPOSE 8080
+CMD ["./hello"]
+
+$ docker build -t hello1 .
+Sending build context to Docker daemon  4.096kB
+. . .
+Successfully built d52cb8505029
+Successfully tagged hello1:latest
+
+$ docker image ls hello1
+REPOSITORY    TAG       IMAGE ID       CREATED       SIZE
+hello1        latest    d52cb8505029   11 secs ago   350MB
+
+$ docker run --name goserver -d -p 8080:8080 hello1
+35d8c49be3f6...51d83a8d9aa78cb0b1efde2940fff2fe42c8
+
+$ docker port goserver
+8080/tcp -> 0.0.0.0:8080
+
+$ curl localhost:8080
+Hello from Docker! Your request path is: /
+
+$ cat Dockerfile
+# Dockerfile - Multi-stage build
+FROM golang:alpine AS builder
+COPY hello.go /app/
+WORKDIR /app
+ENV CGO_ENABLED=0
+RUN go build hello.go
+EXPOSE 8080
+
+FROM alpine:latest
+COPY --from=builder /app/hello .
+CMD ["./hello"]
+
+$ docker stop goserver
+goserver
+
+$ docker rm goserver
+goserver
+
+$ docker build -t hello2 .
+Sending build context to Docker daemon  6.656kB
+. . .
+Successfully built d033a200f043
+Successfully tagged hello2:latest
+
+$ docker run --name goserver -d -p 8080:8080 hello2
+6e2da270c336...939e535658421748c60c589b8f096e4959e9
+
+$ docker port goserver
+8080/tcp -> 0.0.0.0:8080
+
+$ curl localhost:8080
+Hello from Docker! Your request path is: /
+
+$ docker image ls hello2
+REPOSITORY    TAG       IMAGE ID       CREATED       SIZE
+hello2        latest    d033a200f043   5 mins ago    11.8MB
+
+$ cat Dockerfile
+# Dockerfile - Multi-stage build
+FROM golang:alpine AS builder
+COPY hello.go /app/
+WORKDIR /app
+ENV CGO_ENABLED=0
+RUN go build hello.go
+EXPOSE 8080
+
+FROM scratch
+COPY --from=builder /app/hello .
+CMD ["./hello"]
+
+$ docker build -t hello3 .
+Sending build context to Docker daemon  6.656kB
+. . .
+Successfully built 355eacad114a
+Successfully tagged hello2:latest
+
+$ docker stop goserver
+goserver
+
+$ docker rm goserver
+goserver
+
+$ docker run --name goserver -d -p 8080:8080 hello3
+02da79d2ef59...df4940d70e5fdde4ca0ef1596f24b28bdbe9
+
+$ docker port goserver
+8080/tcp -> 0.0.0.0:8080
+
+$ curl localhost:8080
+Hello from Docker! Your request path is: /
+
+$ docker image ls hello3
+REPOSITORY    TAG       IMAGE ID       CREATED       SIZE
+hello3        latest    355eacad114a   5 mins ago    6.24MB
+
+This image is much smaller because scratch was initially empty.

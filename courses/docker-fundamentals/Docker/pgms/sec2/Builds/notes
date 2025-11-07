@@ -1,0 +1,41 @@
+
+                        Section 2 - Notes
+                         Building Images 
+
+1.  Build install image.
+
+    $ cd install
+    $ cat Dockerfile
+    FROM progrium/busybox
+    RUN opkg-install curl bash
+    CMD ["bin/bash"]
+
+    $ docker build -t install . 
+
+    $ docker run -it install
+    bash-5.0# which curl
+    /usr/bin/curl
+    bash-5.0# which bash
+    /bin/bash
+    bash-5.0# exit
+
+2.  Build curl image.
+
+    $ cd curl
+    $ cat Dockerfile
+    FROM alpine
+    RUN apk add curl
+    ENTRYPOINT ["curl"]
+    CMD ["--help"]
+
+    $ docker build -t curl .
+
+    $ docker run curl
+    -a, --append        Append to target file when uploading
+    . . .
+
+    $ docker run curl google.com
+    <TITLE>301 Moved</TITLE></HEAD><BODY>
+    <H1>301 Moved</H1>
+    . . .
+

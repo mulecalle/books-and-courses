@@ -1,0 +1,39 @@
+
+                        Section 4 - Notes
+                      Environment Variables
+                             
+$ cd env2
+
+$ cat docker-compose.yaml 
+version: '3'
+services:
+  webserver:
+    image: nginx
+    environment:
+      - API_KEY=${KEY}
+    ports:
+      - "8002:80"
+      
+$ cat .env
+KEY=8a53m7x02p58d8s1
+
+$ docker-compose up -d
+Creating network "env2_default" with the default driver
+Creating env2_webserver_1 ... 
+Creating env2_webserver_1 ... done
+
+$ docker-compose ps
+      Name                    Command      State   Ports        
+---------------------------------------------------------------
+env2_webserver_1   /docker-entrypoint...   Up      8002->80/tcp
+
+$ docker exec env2_webserver_1 env | grep API
+API_KEY=8a53m7x02p58d8s1
+
+
+
+
+
+
+
+

@@ -1,0 +1,36 @@
+
+                        Section 2 - Notes
+                         CMD Instruction
+
+1.  Initial Dockerfile, build image and run.
+
+    $ cat Dockerfile
+    # Dockerfile for CMD instruction
+    FROM unbuntu
+    CMD echo "How many words here" | wc -w
+
+    $ docker build -t cmd . 
+    $ docker run cmd
+    4
+
+2.  Next Dockerfile, build image and run.
+
+    $ cat Dockerfile
+    # Dockerfile for CMD instruction
+    FROM unbuntu
+    CMD ["/usr/bin/wc", "-l", "/etc/passwd"]
+
+    $ docker build -t cmd . 
+    $ docker run cmd
+    19 /etc/passwd
+
+3.  Last Dockerfile, build image and run.
+
+    $ cat Dockerfile
+    # Dockerfile for CMD instruction
+    FROM unbuntu
+    CMD ["/bin/bash"]
+
+    $ docker build -t cmd . 
+    $ docker run -it cmd
+    root@b31635c75cd4:/# exit

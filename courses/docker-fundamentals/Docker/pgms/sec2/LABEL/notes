@@ -1,0 +1,27 @@
+
+                        Section 2 - Notes
+                         LABEL Instruction
+
+1.  Dockerfile in this directory.
+
+    $ cat Dockerfile
+    # Dockerfile for LABEL instruction
+    FROM busybox
+    LABEL maintainer="Joe Jones <joe@company.com>"
+    LABEL version="1.0"
+
+2.  Build image.
+
+    $ docker build -t label . 
+
+3.  Inspect image for labels.
+
+    $ docker inspect label | grep maintainer 
+        "maintainer": "Joe Jones <joe@company.com>",
+        "maintainer": "Joe Jones <joe@company.com>",
+
+    $ docker inspect label | grep version 
+        "LABEL version=1.0"
+        "version": "1.0"
+        "version": "1.0"
+
