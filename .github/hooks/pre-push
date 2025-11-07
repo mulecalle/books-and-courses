@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Get the repository root directory
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Run the generate-readme.sh script
+if ! "$REPO_ROOT/scripts/generate-readme.sh"; then
+    echo "❌ Error: README generation failed. Please fix the issues and try again."
+    exit 1
+fi
+
+# Stage the README.md changes
+git add "$REPO_ROOT/README.md"
+
+# Check if there are any changes to commit
+if ! git diff --cached --quiet -- "$REPO_ROOT/README.md"; then
+    echo "📝 Auto-generated README.md changes have been staged."
+    echo "   Please commit these changes before pushing."
+    exit 1
+fi
+
+exit 0
