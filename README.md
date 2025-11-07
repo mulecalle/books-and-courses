@@ -3,10 +3,10 @@
 Random learnings from multiple resources.
 
 ## Table of content (auto-generated):
--e 
+
 ### Books
 - [Introducing Go](./books/introducing-go)
--e 
+
 ### Courses
 - [Aws Certified Cloud Practitioner](./courses/AWS-certified-cloud-practitioner)
 - [Basic Buildpack](./courses/basic-buildpack)
@@ -18,5 +18,5 @@ Random learnings from multiple resources.
 - [Rust Fundamentals](./courses/rust-fundamentals)
 - [Semantic Search](./courses/semantic-search)
 - [Understanding Machine Learning](./courses/understanding-machine-learning)
--e 
+
 
