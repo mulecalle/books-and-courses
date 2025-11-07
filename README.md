@@ -16,5 +16,6 @@ Random learnings from multiple resources.
 - [React Fundamentals](./courses/react-fundamentals)
 - [Rust Fundamentals](./courses/rust-fundamentals)
 - [Semantic Search](./courses/semantic-search)
+- [Understanding Machine Learning](./courses/understanding-machine-learning)
 
 
