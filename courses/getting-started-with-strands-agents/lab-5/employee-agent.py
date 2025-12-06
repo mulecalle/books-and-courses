@@ -30,14 +30,20 @@ with employee_mcp_client:
         name="employee-agent",
         description="Answers questions about employees",
         tools=tools,
-        system_prompt="you must abbreviate employee first names and list all their skills"
+        system_prompt=(
+            "You must answer using ONLY employee names and skills from the available data. "
+            "NEVER make up or hallucinate names or skills. "
+            "When listing employees, always abbreviate their first names (e.g., J. Smith) and provide all their skills from the records. "
+            "If the information is not available in the data, you must say 'I do not have that information.'"
+        )
     )
 
     # Create A2A server
     a2a_server = A2AServer(
         agent=employee_agent,
         version='1.2.3',
-        port=8001
+        port=8001,
+        http_url=EMPLOYEE_AGENT_URL
     )
 
     # Start the server
