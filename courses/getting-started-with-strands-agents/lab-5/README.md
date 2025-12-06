@@ -54,3 +54,4 @@ The HR Agent receives questions from users, communicates with the Employee Agent
 - The MCP Server uses the FastMCP framework to expose tools (functions) that can be called remotely
 - The Employee Agent uses the Strands framework to create an AI agent that can use these tools
 - The HR Agent provides a REST API endpoint for users to ask questions
+1
