@@ -13,6 +13,7 @@ Random learnings from multiple resources.
 - [Docker Fundamentals](./courses/docker-fundamentals)
 - [Getting Started Nlp](./courses/getting-started-nlp)
 - [Getting Started With Strands Agents](./courses/getting-started-with-strands-agents)
+- [Kagent](./courses/kagent)
 - [Key Concepts Machine Learning](./courses/key-concepts-machine-learning)
 - [Learning Python](./courses/learning-python)
 - [Oauth 2](./courses/oauth-2)
